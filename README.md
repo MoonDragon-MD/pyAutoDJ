@@ -12,7 +12,7 @@ pip install PyQt5 vlc librosa numpy mutagen soundfile pyqtgraph
 ```
 
 **System Dependencies:**
-- **Windows:** VLC Media Player from the official website
+- **Windows:** VLC Media Player from the official website + pip
     ```bash
   python -m pip install python-vlc
   ```
