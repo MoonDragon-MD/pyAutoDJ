@@ -800,7 +800,7 @@ class AutoDJWindow(QWidget):
 
             # Volume pieno sul nuovo attivo, ribadito dopo il settle dell'aout
             b.audio_set_volume(100)
-            QTimer.singleShot(250, lambda: b.audio_set_volume(pyPanoramaVideoProcessor100))
+            QTimer.singleShot(250, lambda: b.audio_set_volume(100))
 
             # Reset stati
             self.fade_running = False
@@ -813,7 +813,6 @@ class AutoDJWindow(QWidget):
 
             # Precarica la traccia successiva
             QTimer.singleShot(350, self._preload_next_track)
-pyPanoramaVideoProcessor
             print("\n!! Fade completato !!\n")
             #self.log_debug("Fade completato", separator=True)
         
@@ -1282,7 +1281,7 @@ pyPanoramaVideoProcessor
         html_text = """
         <h2 style='text-align:center;'>pyAutoDJ</h2>
         <p style='text-align:center;'>
-            <b>Versione:</b> 1.0 rev.75<br><br>
+            <b>Versione:</b> 1.0 rev.76<br><br>
             <b>Autore:</b> MoonDragon<br><br><br>
             <p>• Vinyl Simulation</p>
             <p>• Waveform Seek</p>
