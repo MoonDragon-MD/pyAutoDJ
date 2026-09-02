@@ -43,6 +43,15 @@ python3 main.py --dual-vc
 - **Windows:** `Start-win.bat`
 - **Linux:** `Start.sh` (standard) or `Start_2vlc.sh` (dual instance)
 
+**Installer for linux menu:**
+
+place inside the pyAutoDJ folder and run
+
+```bash
+./installer.sh
+```
+This will copy the folder to a fixed place and create the launcher for the Linux menu
+
 ### Features
 
 | Feature | Description |
