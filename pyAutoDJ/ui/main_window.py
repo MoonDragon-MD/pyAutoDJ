@@ -1,6 +1,7 @@
-import sys
+import os, sys
 import threading
 import math
+import vlc
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -15,8 +16,6 @@ from PyQt5.QtCore import (
     Qt
 )
 import numpy as np
-import vlc
-import os
 
 from core.player_engine import PlayerEngine
 from ui.debug_window import DebugWindow
@@ -30,7 +29,6 @@ from ui.playlist_widget import PlaylistWidget
 from ui.controls_widget import ControlsWidget
 from core.playlist_engine import harmonic_similarity
 from collections import deque
-
 
 class AutoDJWindow(QWidget):
 
@@ -690,14 +688,18 @@ class AutoDJWindow(QWidget):
             # Già preriscaldata da monitor_playback: sessione già aperta,
             # ci si assicura solo che sia muta
             inactive.audio_set_volume(0)
-            
+
         self.sync_decks_ui()
 
         # Imposta il punto di ingresso sulla prossima traccia
         trim_start = getattr(self, "pending_next_start", 
                            int(next_track.get("start_trim", 0) * 1000))
 
-        QTimer.singleShot(160, lambda: inactive.set_time(trim_start))
+        # Player preriscaldato in pausa: si può settare il tempo da fermi
+        try:
+            inactive.set_time(trim_start) # da fermo: affidabile
+        except Exception:
+            pass
 
         # ===================== FX IN RAMPA SUL BRANO ENTRANTE =====================
         # L'FX viene agganciato quando il brano entrante è già udibile (~30% volume)
@@ -706,13 +708,26 @@ class AutoDJWindow(QWidget):
         if self.fx_enabled:
             fx_delay = int(self.FADE_DURATION_MS * 0.15)  # ~930ms a 6200ms fade
             QTimer.singleShot(fx_delay, lambda: self.apply_random_fx(inactive))
+			
+        # Riattiva la riproduzione del deck entrante (era in pausa dal pre-warm):
+        # partirà dal punto di ingresso, a volume 0
+        try:
+            inactive.play()
+        except Exception:
+            pass
 
         # ===================== AVVIA IL CROSSFADE =====================
         if getattr(self, "fade_timer", None) is not None:
             self.fade_timer.stop()
-            self.fade_timer.deleteLater()      # evita accumulo di timer morti
-            
-        # INIZIALIZZA PRIMA DI AVVIARE IL TIMER
+            self.fade_timer.deleteLater()  # evita accumulo di timer morti
+        
+        # Il fade parte da volume 0 (curva equal-power: sin(0) = 0)
+        try:
+            inactive.audio_set_volume(0)  # riparte da trim_start, volume 0
+        except Exception:
+            pass
+
+        # Timer del fade
         self.fade_elapsed = QElapsedTimer()
         self.fade_elapsed.start()
         self._last_av = -1
@@ -1182,6 +1197,16 @@ class AutoDJWindow(QWidget):
         except Exception:
             pass
 
+        # === GUARDIA VOLUME PRE-WARM (FIX WINDOWS) ===
+        # Tra il pre-warm e l'inizio del fade, il player inattivo deve restare muto
+        if getattr(self, "prewarmed_path", None) is not None:
+            try:
+                inactive = self.players.inactive_player()
+                if inactive.audio_get_volume() != 0:
+                    inactive.audio_set_volume(0)
+            except Exception:
+                pass
+		
         # --- LOGICA AUTOMATICA DI FADE ---
         # Calcolo del tempo rimanente reale basato sui trim (end_trim)
         # Usiamo end_trim perché rappresenta la fine dell'audio utile, escludendo il silenzio finale
@@ -1281,14 +1306,14 @@ class AutoDJWindow(QWidget):
         html_text = """
         <h2 style='text-align:center;'>pyAutoDJ</h2>
         <p style='text-align:center;'>
-            <b>Versione:</b> 1.0 rev.76<br><br>
-            <b>Autore:</b> MoonDragon<br><br><br>
+            <b>Version:</b> 1.1 rev.7<br><br>
+            <b>Author:</b> MoonDragon<br><br><br>
             <p>• Vinyl Simulation</p>
             <p>• Waveform Seek</p>
             <p>• Manual Fade Now</p>
             <p>• Semi-Manual Fade Next Match (Smart Transition)</p>
             <p>• Auto Random Fade (Smart Transition)</p>
-            <p>• FX during transition</p><br><
+            <p>• FX during transition</p>
             <p>• Debug window</p><br><br>
             Site: <a href='https://github.com/MoonDragon-MD/pyAutoDJ'>https://github.com/MoonDragon-MD/pyAutoDJ</a>
         </p>

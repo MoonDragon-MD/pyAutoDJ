@@ -1,6 +1,6 @@
-import vlc
-import sys
 import os
+import sys
+import vlc
 import time
 
 class PlayerEngine:
@@ -17,6 +17,11 @@ class PlayerEngine:
             '--no-video-title-show',
             '--no-xlib'
         ]
+		
+        # EXTRA FIX AUDIO WINDOWS		
+        # WASAPI shared mode gracchia con 2 stream
+        # contemporanei della stessa istanza; DirectSound regge meglio
+        if sys.platform.startswith("win"): common_options.append('--aout=directsound')
         
         self.use_separate_vlc = False
         
@@ -122,10 +127,8 @@ class PlayerEngine:
         start = time.time()
         while time.time() - start < timeout_ms / 1000:
             if player.get_state() == vlc.State.Playing:
-                # FIX WASAPI: su Windows il volume impostato prima del play
-                # puo' essere ignorato dalla sessione audio. Lo ribadiamo
-                # DOPO che lo stream e' effettivamente partito.
                 player.audio_set_volume(0)
+                player.pause()          # Congela il decode, sessione WASAPI già aperta
                 return True
             time.sleep(0.05)
         player.audio_set_volume(0)
