@@ -71,6 +71,9 @@ This will copy the folder to a fixed place and create the launcher for the Linux
 | **Debug Window** | Integrated log window to monitor events and debug |
 | **Cover Art** | Automatic extraction of album covers from MP3/FLAC metadata |
 | **Drag & Drop** | File and folder loading via drag-and-drop |
+| **audio Auto-Cut** | cuts the silences at the beginning and end of the song |
+| **VLC Portable Ready** | Only-Windows: Just uncomment to get vlc portable and copy the required files |
+| **Python Portable Ready** | Only-Windows: Just download python embed and launch the appropriate bat |
 
 ### Screenshot
 
