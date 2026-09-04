@@ -4,7 +4,7 @@ Automatic Digital Audio Workstation for DJing with intelligent transitions based
 
 ### Dependencies
 
-Python 3.6+ (tested on Windows and Ubuntu with versions 3.6, 3.8, 3.10, 3.14)
+Python 3.6+ (tested on Windows and Ubuntu with versions 3.6, 3.8, 3.10, 3.12, 3.14)
 
 **Python Dependencies:**
 ```bash
