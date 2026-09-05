@@ -45,12 +45,24 @@ python3 main.py --dual-vc
 
 **Installer for linux menu:**
 
-place inside the pyAutoDJ folder and run
+place inside the pyAutoDJ folder and run (V.1.0)
 
 ```bash
 ./installer.sh
 ```
+(V.1.1):
+```bash
+./Installer-Linux.sh
+```
 This will copy the folder to a fixed place and create the launcher for the Linux menu
+
+**Installer for windows:**
+
+double click on the Installer-Windows.bat file
+
+**Portable for windows:**
+
+double click on the Start-portable.bat file
 
 ### Features
 
